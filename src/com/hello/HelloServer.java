@@ -23,7 +23,7 @@ public class HelloServer {
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         /*worker线程组处理IO请求*/
         EventLoopGroup workerGroup = new NioEventLoopGroup();
-        String name = "LLLLdfdfdsfLL";
+        
         ServerBootstrap b = new ServerBootstrap();
         b.group(bossGroup, workerGroup)
         .channel(NioServerSocketChannel.class)
