@@ -69,7 +69,6 @@ public abstract class ChannelInitializer<C extends Channel> extends ChannelInbou
     protected abstract void initChannel(C ch) throws Exception;
 
     @Override
-    @SuppressWarnings("unchecked")
     public final void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         // Normally this method will never be called as handlerAdded(...) should call initChannel(...) and remove
         // the handler.

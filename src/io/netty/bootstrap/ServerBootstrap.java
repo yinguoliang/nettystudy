@@ -232,6 +232,7 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
         @Override
         @SuppressWarnings("unchecked")
         public void channelRead(ChannelHandlerContext ctx, Object msg) {
+            //因为boss线程组接收到的是用户的connect请求，所以这里可以直接将msg转为channel
             final Channel child = (Channel) msg;
 
             child.pipeline().addLast(childHandler);
@@ -251,6 +252,7 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
             }
 
             try {
+                //boss组持有worker组的实例，可以直接给worker组的线程传递对象
                 childGroup.register(child).addListener(new ChannelFutureListener() {
                     @Override
                     public void operationComplete(ChannelFuture future) throws Exception {

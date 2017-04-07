@@ -317,6 +317,10 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
         Channel channel = null;
         try {
             channel = channelFactory.newChannel();
+            /*
+             * 初始化channel,包括pipeline
+             * boss组和worker组的pipeline是不一样的
+             */
             init(channel);
         } catch (Throwable t) {
             if (channel != null) {
@@ -326,7 +330,9 @@ public abstract class AbstractBootstrap<B extends AbstractBootstrap<B, C>, C ext
             // as the Channel is not registered yet we need to force the usage of the GlobalEventExecutor
             return new DefaultChannelPromise(channel, GlobalEventExecutor.INSTANCE).setFailure(t);
         }
-
+        /*
+         * 注册channel到boss线程组
+         */
         ChannelFuture regFuture = config().group().register(channel);
         if (regFuture.cause() != null) {
             if (channel.isRegistered()) {
