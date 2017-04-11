@@ -29,6 +29,9 @@ public class HelloServer {
         .channel(NioServerSocketChannel.class)
         .option(ChannelOption.SO_BACKLOG, 1024)
         .childHandler(new ChannelInitializer<SocketChannel>(){
+            /*
+             * 注册channel的时候会调用initChannel方法
+             */
             @Override
             protected void initChannel(SocketChannel ch) throws Exception {
                 ch.pipeline().addLast(new DelimiterBasedFrameDecoder(8192,Delimiters.lineDelimiter()));

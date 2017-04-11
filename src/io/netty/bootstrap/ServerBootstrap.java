@@ -212,7 +212,10 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
     private static Entry<AttributeKey<?>, Object>[] newAttrArray(int size) {
         return new Entry[size];
     }
-
+    /**
+     * ServerBootstrapAcceptor是boss线程组的channel的pipeline里面的消息处理类<br>
+     * 该类是用来处理客户端连接的
+     */
     private static class ServerBootstrapAcceptor extends ChannelInboundHandlerAdapter {
 
         private final EventLoopGroup childGroup;
@@ -224,6 +227,11 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
                 EventLoopGroup childGroup, ChannelHandler childHandler,
                 Entry<ChannelOption<?>, Object>[] childOptions, Entry<AttributeKey<?>, Object>[] childAttrs) {
             this.childGroup = childGroup;
+            /*
+             * childHandler是一个ChannelInitializer类，对于每个客户端的连接，都会用该类来初始化客户端channel的pipeline
+             * 因为服务端起来的时候，并没有客户端连接过来，所以没有初始化动作
+             * 因此服务端会保持这个类，等有客户端连接过来之后，再用这个类来初始化客户端的channel pipeline
+             */
             this.childHandler = childHandler;
             this.childOptions = childOptions;
             this.childAttrs = childAttrs;
@@ -234,7 +242,11 @@ public class ServerBootstrap extends AbstractBootstrap<ServerBootstrap, ServerCh
         public void channelRead(ChannelHandlerContext ctx, Object msg) {
             //因为boss线程组接收到的是用户的connect请求，所以这里可以直接将msg转为channel
             final Channel child = (Channel) msg;
-
+            /*
+             * 1) addLast这类注册ChannelHandler的方法，会判断当前的channel是否已经注册过
+             * 如果没有注册，会将注册任务挂起，在注册时候会调用任务的execute()方法
+             * 2) 客户端连接过来，使用childHandler来初始化channel pipeline
+             */
             child.pipeline().addLast(childHandler);
 
             for (Entry<ChannelOption<?>, Object> e: childOptions) {

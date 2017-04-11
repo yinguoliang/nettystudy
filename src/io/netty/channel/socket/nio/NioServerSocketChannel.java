@@ -37,7 +37,26 @@ import java.util.List;
 
 /**
  * A {@link io.netty.channel.socket.ServerSocketChannel} implementation which uses
- * NIO selector based implementation to accept new connections.
+ * NIO selector based implementation to accept new connections.<br>
+ * 
+ * NIO Socket编程中，涉及到channel的概念<br>
+ * 
+ * Netty对channel又进行了封装，通常封装有两种方式:泛化（继承）、关联(聚合，组合)<br>
+ * 
+ * 关联的方式是一种很宽泛和灵活的扩展方式，可以对封装对象进行自由的扩展。<br>
+ * 
+ * Netty对channel的增强就使用了关联的方法：持有SelectableChannel变量<br>
+ * 
+ * 以本类为例，本类增强了java原生的SocketChannel，可以监听某个端口(doBind)<br>
+ * 可以接受客户端连接请求(doReadMessages)<br>
+ * 同时，增强了对请求的处理能力（使用pipeline自由定制）（Netty以通道的方式抽象了socket的处理）<br>
+ * 
+ * 由于对通道的抽象，netty的通道都有pipeline来处理消息，因此可以将处理过程放到抽象类中<br>
+ * 类NioSocketChannel也是同样的道理。<br><br>
+ * <font color=red><strong>
+ * 考虑一个问题：Netty是如何将java socket编程组件改造成基于通道的处理模式的？？<br>
+ * 很明显就能看出为什么需要设计NioServerSocketChannel和NioSocketChannel两个类了
+ * </strong></font>
  */
 public class NioServerSocketChannel extends AbstractNioMessageChannel
                              implements io.netty.channel.socket.ServerSocketChannel {

@@ -29,20 +29,20 @@ public class HelloClient {
                     ch.pipeline().addLast(new SimpleChannelInboundHandler<String>(){
                         @Override
                         protected void channelRead0(ChannelHandlerContext ctx,String msg) throws Exception {
-                            System.out.println("Client收到:"+msg);
+//                            System.out.println(Thread.currentThread().getName()+":Client收到:"+msg);
                             ctx.writeAndFlush("Client已经收到消息了"+"\r\n");
                             Thread.sleep(1000);
                         }
                         @Override
                         public void channelActive(ChannelHandlerContext ctx) throws Exception {
-                            System.out.println("Client Active::::"+ctx.channel().remoteAddress());
+//                            System.out.println("Client Active::::"+ctx.channel().remoteAddress());
                             ctx.writeAndFlush("Welcome to Client!"+"\r\n");
                             Thread.sleep(1000);
                             super.channelActive(ctx);
                         }
                         @Override
                         public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-                            System.out.println("Client InActive::::"+ctx.channel().remoteAddress());
+//                            System.out.println("Client InActive::::"+ctx.channel().remoteAddress());
 //                          ctx.fireChannelInactive();
                         }
                     });
