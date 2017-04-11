@@ -109,12 +109,22 @@ public abstract class AbstractNioByteChannel extends AbstractNioChannel {
             final ByteBufAllocator allocator = config.getAllocator();
             final RecvByteBufAllocator.Handle allocHandle = recvBufAllocHandle();
             allocHandle.reset(config);
-
+            /*
+             * 零拷贝技术
+             * Netty中bytebuf的数据传输，都是通过bytebuf直接传递的
+             * 这样就不用将数据在内存中拷来拷去的，从而提高了性能
+             */
             ByteBuf byteBuf = null;
             boolean close = false;
             try {
                 do {
+                    /*
+                     * 申请内存来存放消息
+                     */
                     byteBuf = allocHandle.allocate(allocator);
+                    /*
+                     * 从channel中读取信息
+                     */
                     allocHandle.lastBytesRead(doReadBytes(byteBuf));
                     if (allocHandle.lastBytesRead() <= 0) {
                         // nothing was read. release the buffer.
@@ -126,11 +136,19 @@ public abstract class AbstractNioByteChannel extends AbstractNioChannel {
 
                     allocHandle.incMessagesRead(1);
                     readPending = false;
+                    /*
+                     * 将读取到的消息交给channel的管道(pipeline)来处理
+                     * pipeline里面根据不同的类型设置了Handler来处理消息流
+                     * 注意：这里直接传递了byteBuf对象(zero copy)
+                     */
                     pipeline.fireChannelRead(byteBuf);
                     byteBuf = null;
                 } while (allocHandle.continueReading());
 
                 allocHandle.readComplete();
+                /*
+                 * 消息处理完毕
+                 */
                 pipeline.fireChannelReadComplete();
 
                 if (close) {
