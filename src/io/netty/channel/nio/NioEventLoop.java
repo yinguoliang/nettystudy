@@ -398,6 +398,11 @@ public final class NioEventLoop extends SingleThreadEventLoop {
                     case SelectStrategy.CONTINUE:
                         continue;
                     case SelectStrategy.SELECT:
+                        /*
+                         * wakenUp的作用:
+                         *   selector.select()会阻塞线程，如果阻塞期间，需要释放线程，
+                         *   就需要调用selector.wakeUp来唤醒线程
+                         */
                         select(wakenUp.getAndSet(false));
 
                         // 'wakenUp.compareAndSet(false, true)' is always evaluated
@@ -438,6 +443,11 @@ public final class NioEventLoop extends SingleThreadEventLoop {
                 cancelledKeys = 0;
                 needsToSelectAgain = false;
                 final int ioRatio = this.ioRatio;
+                /*
+                 * IO任务：processSelectedKeys()
+                 * 非IO任务:runAllTask(..)
+                 * 先执行IO任务，在执行非IO任务
+                 */
                 if (ioRatio == 100) {
                     try {
                         processSelectedKeys();
