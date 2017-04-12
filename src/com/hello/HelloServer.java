@@ -23,7 +23,15 @@ public class HelloServer {
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         /*worker线程组处理IO请求*/
         EventLoopGroup workerGroup = new NioEventLoopGroup();
-        
+        /*
+         * NIO的编程模型是Socket绑定到端口上，得到一个channel，然后将channel注册到selector上，最后不断的遍历selector
+         * 
+         * netty也一样要按照上面的思路来处理
+         * 其中channel有自己的扩展，并增强了功能，提供诸如pipeline的模式来处理消息
+         * 而selector则放在了EventLoop中
+         * 
+         * netty增强的channel都会注册到某个EventLoopGroup中，Group会选择一个EventLoop注册进去
+         */
         ServerBootstrap b = new ServerBootstrap();
         b.group(bossGroup, workerGroup)
         .channel(NioServerSocketChannel.class)

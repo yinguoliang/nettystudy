@@ -384,6 +384,12 @@ public abstract class AbstractNioChannel extends AbstractChannel {
         boolean selected = false;
         for (;;) {
             try {
+                /*
+                 * 注册channel到selector上
+                 * 注意:selector只接受原生的socketChannel，并不接受netty扩展的channel对象
+                 * 但是我们的主要功能都是扩展channel来完成的，比如消息读取,消息处理pipeline等
+                 * 所以这里需要将扩展的channel作为attachment注册进去(即这里的this)
+                 */
                 selectionKey = javaChannel().register(eventLoop().selector, 0, this);
                 return;
             } catch (CancelledKeyException e) {
