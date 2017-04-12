@@ -12,3 +12,8 @@ Stag间使用事件驱动的异步通信模式。
 > 增强的Channel自定义了pipeline来处理消息  
 > 增强的channel实现了Unsafe类来进行消息的读取、渠道注册等功能   
 
+# NIOEventLoop
+* NioEventLoop是一个不断循环的代码   
+  NioEventLoop持有一个selector对象  
+  循环代码不断的监听selector事件，如果有感兴趣的事件出现，则转去处理事件
+  
